@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
-   
-   <!-- Tell Blueprint/OSGi to inject an instance of a service with provides CamelRass interface -->
-   <reference availability="mandatory"
-     id="routeAsAServiceFromOtherBlueprint" interface="org.service.provider.CamleRass"/>
-     
-  <!-- Can use the service as a regular bean and set it in other beans -->
-  
-  <bean class="org.service.consumer.ConsumerBeanThatUsesService" id="consumerBean">
-   <property name="camelRass" ref="routeAsAServiceFromOtherBlueprint"/>
-  </bean>
-  
-  <camelContext id="RouteConsumerContext" xmlns="http://camel.apache.org/schema/blueprint">
-    <route id="_route1">
-      <from id="_from1" uri="timer:t1?delay=5s$amp;repeatCount=1"/>
-      <log id="_log1" message="Ready to call OSGi serivce, methodOne"/>
-      <bean id="_bean1" method="useCamelRouteInsideServiceOneParameter" ref="consumerBean"/>
-      <log id="_log2" message="OSGi service method answer : ${body}"/>
-    </route>
-    
-    <route id="_route1">
-      <from id="_from2" uri="timer:t1?delay=10s&amp;repeatCount=1"/>
-      <log id="_log3" message="Ready to call OSGi service, methodTwo"/>
-      <bean id="_bean2" method="useCamelRouteInsideServiceTwoParameters" ref="consumerBean"/>
-      <log id="_log4" message="OSGi Serivce methodTwo answer : ${body}"/>
-    </route>
-    
-    <route id="_route1">
-      <from id="_from3" uri="timer:t1?delay=15s&amp;repeatCount=1"/>
-      <log id="_log5" message="Ready to call OSGi service, camle will bind the method call"/>
-      <setBody id="_setBody1">
-        <simple>This is a string body</simple>
-      </setBody>
-      <to id="_to1" uri="bean:routeAsAServiceFromOtherBlueprint"/>
-      <log id="_log6" message="OSGi service bound by camel answer: ${body}"/>
-    </route>
-  </camelContext>
+<blueprint default-activation="lazy"
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:camel="http://camel.apache.org/schema/blueprint"
+    xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="          http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd         http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/cxf/camel-cxf-blueprint.xsd        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <!-- Tell Blueprint/OSGi to inject an instance of a service with provides CamelRass interface -->
+    <reference availability="mandatory"
+        id="routeAsAServiceFromOtherBlueprint" interface="org.service.provider.CamelRass"/>
+    <!-- Can use the service as a regular bean and set it in other beans -->
+    <bean class="org.service.consumer.ConsumerBeanThatUsesService" id="consumerBean">
+        <property name="camelRass" ref="routeAsAServiceFromOtherBlueprint"/>
+    </bean>
+    <camelContext id="RouteConsumerContext" xmlns="http://camel.apache.org/schema/blueprint">
+        <route id="_route1">
+            <from id="_from1" uri="timer://t1?fixedRate=true&amp;period=60000"/>
+            <log id="_log1" message="Ready to call OSGi serivce, methodOne"/>
+            <bean id="_bean1"
+                method="useCamelRouteInsideServiceOneParameter" ref="consumerBean"/>
+            <log id="_log2" message="OSGi service method answer : ${body}"/>
+        </route>
+        <!-- <route id="_route2">
+            <from id="_from2" uri="timer:t1?delay=10s&amp;repeatCount=1"/>
+            <log id="_log3" message="Ready to call OSGi service, methodTwo"/>
+            <bean id="_bean2"
+                method="useCamelRouteInsideServiceTwoParameters" ref="consumerBean"/>
+            <log id="_log4" message="OSGi Serivce methodTwo answer : ${body}"/>
+        </route>
+        <route id="_route3">
+            <from id="_from3" uri="timer:t1?delay=15s&amp;repeatCount=1"/>
+            <log id="_log5" message="Ready to call OSGi service, camle will bind the method call"/>
+            <setBody id="_setBody1">
+                <simple>This is a string body</simple>
+            </setBody>
+            <to id="_to1" uri="bean:routeAsAServiceFromOtherBlueprint"/>
+            <log id="_log6" message="OSGi service bound by camel answer: ${body}"/>
+        </route> -->
+    </camelContext>
 </blueprint>

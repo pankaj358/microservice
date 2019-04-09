@@ -19,4 +19,13 @@ public class ConsumerBeanThatUsesService {
 		log.info("Inside service two method");
 		return camelRass.methodTwo("Java interface with two parameters....", "Will this work?");
 	}
+	
+	public void setCamelRass(CamelRass camelRass) {
+		this.camelRass = camelRass;
+	}
+	
+	public CamelRass getCamelRass() {
+		return this.camelRass;
+	}
+	
 }
